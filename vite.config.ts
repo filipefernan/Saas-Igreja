@@ -14,6 +14,20 @@ export default defineConfig(({ mode }) => {
         alias: {
           "@": path.resolve(__dirname, "."),
         }
+      },
+      preview: {
+        host: true,
+        port: process.env.PORT ? parseInt(process.env.PORT) : 4173,
+        allowedHosts: [
+          "localhost",
+          "127.0.0.1",
+          "saas-igreja-production.up.railway.app",
+          ".up.railway.app" // Permite qualquer subdomínio do Railway
+        ]
+      },
+      server: {
+        host: true,
+        port: 5173
       }
     };
 });
