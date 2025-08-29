@@ -1,6 +1,6 @@
 # SaaS Igreja - Desenvolvimento
 
-## 📋 Status Atual (29/08/2025) - ✅ **SISTEMA FUNCIONAL 100%**
+## 📋 Status Atual (29/08/2025) - 🚀 **SISTEMA EM PRODUÇÃO 100%**
 
 ### 🎉 **IMPLEMENTADO COMPLETAMENTE**
 - **Estrutura Base**: React + TypeScript + Vite
@@ -10,14 +10,30 @@
 - **Interface Completa**: Todos os módulos principais desenvolvidos
 - **Autenticação Real**: JWT + Supabase Auth funcionando
 - **Banco de Dados**: Supabase com RLS configurado
-- **Deploy Backend**: Pronto para produção
+- **🚀 DEPLOY PRODUÇÃO**: Sistema funcionando 100% no Railway
 
-### 🏗️ **ARQUITETURA ATUAL**
-- **Frontend**: React → API Service → Backend
-- **Backend**: Node.js com rotas modulares
-- **Database**: Supabase (PostgreSQL)
+### 🌐 **URLs PRODUÇÃO**
+- **Frontend**: https://saas-igreja-production.up.railway.app
+- **Backend API**: https://backend-production-5eb7.up.railway.app
+- **Health Check**: https://backend-production-5eb7.up.railway.app/api/saude
+
+### 🏗️ **ARQUITETURA PRODUÇÃO**
+```
+🌐 Frontend (Railway)    🖥️ Backend (Railway)    🗄️ Supabase
+     ↓                        ↓                      ↓
+   React App             Express API          PostgreSQL + Auth
+     ↓                        ↓                      ↓
+ Vite + TypeScript      Rotas Modulares        RLS Security
+     ↓                        ↓                      ↓
+  CORS Config            JWT + CORS            Auth Tables
+```
+
+- **Frontend**: https://saas-igreja-production.up.railway.app
+- **Backend**: https://backend-production-5eb7.up.railway.app/api
+- **Database**: Supabase (PostgreSQL) 
 - **Auth**: JWT tokens + sessões persistentes
 - **IA**: Gemini API integrada
+- **Deploy**: Railway (serviços separados)
 
 ### 🎯 **MÓDULOS FUNCIONAIS**
 1. ✅ **Autenticação**: Login/Cadastro via API
@@ -162,16 +178,18 @@ src/
 GEMINI_API_KEY=AIzaSyBwTdCM9vkEvActxg0F42ApKgxmYySvq70
 ```
 
-### **Deploy**
-- **Plataforma**: Railway
-- **Status**: ✅ Funcional
-- **URL**: [Configurar quando disponível]
+### **🚀 Deploy Railway - FINALIZADO**
+- **Plataforma**: Railway (serviços separados)
+- **Status**: ✅ 100% FUNCIONAL EM PRODUÇÃO
+- **Frontend**: https://saas-igreja-production.up.railway.app
+- **Backend**: https://backend-production-5eb7.up.railway.app
+- **Configurações**: CORS, Vite, JWT, Supabase - todas OK
 
 ---
 
 ## 📝 **NOTAS DE DESENVOLVIMENTO**
 
-### **✨ Última Sessão (29/08/2025) - SISTEMA COMPLETAMENTE FUNCIONAL**
+### **🚀 Última Sessão (29/08/2025) - DEPLOY PRODUÇÃO FINALIZADO**
 - ✅ **Backend API Criado**: Node.js + Express com rotas em português
 - ✅ **Autenticação Real**: JWT + Supabase funcionando perfeitamente
 - ✅ **Onboarding Persistente**: Salvo no banco, executado apenas uma vez
@@ -179,7 +197,11 @@ GEMINI_API_KEY=AIzaSyBwTdCM9vkEvActxg0F42ApKgxmYySvq70
 - ✅ **Fluxo Completo**: Login → Onboarding → Dashboard funcionando
 - ✅ **RLS Configurado**: Segurança no Supabase implementada
 - ✅ **Arquitetura Modular**: Backend organizado por módulos
-- ✅ **Sistema Pronto**: 100% funcional para uso real
+- ✅ **🌐 DEPLOY RAILWAY**: Frontend + Backend funcionando em produção
+- ✅ **CORS Configurado**: Multi-origem (localhost + railway.app)
+- ✅ **Vite Config**: Host binding e allowedHosts configurados
+- ✅ **API Detection**: Frontend detecta automaticamente ambiente (dev/prod)
+- ✅ **Health Check**: Backend respondendo corretamente
 
 ### **📊 Métricas da Implementação**
 - **4 rotas backend** implementadas e testadas
@@ -239,5 +261,26 @@ GEMINI_API_KEY=AIzaSyBwTdCM9vkEvActxg0F42ApKgxmYySvq70
 
 ---
 
+## 🎉 **STATUS FINAL - SISTEMA EM PRODUÇÃO**
+
+### **✅ COMPLETADO HOJE (29/08/2025)**
+1. **🔧 Correção de autenticação** - Sistema 100% funcional
+2. **🏗️ Arquitetura backend** - API modular em português  
+3. **🚀 Deploy Railway** - Frontend + Backend em produção
+4. **🔗 CORS & Vite** - Configurações para produção
+5. **📚 Documentação** - Sistema totalmente documentado
+
+### **🌐 ACESSOS PRODUÇÃO**
+- **Sistema**: https://saas-igreja-production.up.railway.app
+- **API**: https://backend-production-5eb7.up.railway.app
+- **Status**: ✅ FUNCIONAL 100%
+
+### **🚀 PRÓXIMA FASE**
+- **Expansão de módulos** conforme roadmap documentado
+- **Sistema base** está sólido e pronto para crescer
+- **Arquitetura escalável** implementada
+
+---
+
 *Última atualização: 29/08/2025 - Gabriel Santinelli*  
-*Status: ✅ **SISTEMA 100% FUNCIONAL** - Pronto para expansão dos módulos restantes*
+*Status: 🚀 **SISTEMA DEPLOYADO EM PRODUÇÃO** - Base sólida para expansão*
