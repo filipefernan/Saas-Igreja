@@ -1,17 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { supabase } from '../services/supabase';
 import { BuildingIcon } from '../components/ui/Icons';
+import { AppContext } from '../context/AppContext';
 
 const InputField: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => (
     <input className="w-full bg-white border border-[var(--color-border)] rounded-lg py-3 px-4 text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent placeholder:text-neutral-400 transition-all" {...props} />
 );
 
 const Login: React.FC = () => {
+    const context = useContext(AppContext);
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    if (!context) {
+        return <div>Loading...</div>;
+    }
+
+    const { setIsAuthenticated } = context;
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,7 +37,12 @@ const Login: React.FC = () => {
                     email,
                     password,
                 });
-                if (error) setError(error.message);
+                if (error) {
+                    setError(error.message);
+                } else {
+                    // Login bem-sucedido - atualizar estado
+                    setIsAuthenticated(true);
+                }
             } else {
                 const { error } = await supabase.auth.signUp({
                     email,
