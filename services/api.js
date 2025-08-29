@@ -14,9 +14,9 @@ const getApiBaseUrl = () => {
     // Desenvolvimento local
     return 'http://localhost:3001/api';
   } else if (hostname.includes('railway.app')) {
-    // Produção Railway - assumindo que o backend está no mesmo domínio com porta 3001
-    // Ou você pode definir a URL específica do seu backend no Railway
-    return `https://saas-igreja-production.up.railway.app/api`;
+    // Produção Railway - backend em projeto separado
+    // IMPORTANTE: Substitua pela URL real do seu backend no Railway
+    return `https://backend-production-5eb7.up.railway.app/api`;
   } else {
     // Fallback para desenvolvimento
     return 'http://localhost:3001/api';
