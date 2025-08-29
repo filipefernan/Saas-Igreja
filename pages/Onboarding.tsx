@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import type { ChurchInfo, AgentSettings, ScheduleItem } from '../types';
 import { generateProfilePicture } from '../services/geminiService';
+import { onboardingService } from '../services/api.js';
 import { SparklesIcon, BuildingIcon } from '../components/ui/Icons';
 
 // Reusable components for the onboarding UI
@@ -73,14 +74,59 @@ const Onboarding: React.FC = () => {
         setIsGeneratingImage(false);
     };
 
-    const handleFinish = () => {
-        setChurchInfo(churchData);
-        setAgentSettings(agentData);
-        const finalSchedules = schedules
-            .filter(s => s.day && s.time && s.description)
-            .map(s => ({...s, id: Date.now().toString() })) as ScheduleItem[];
-        setGlobalSchedules(finalSchedules);
-        setIsOnboardingComplete(true);
+    const handleFinish = async () => {
+        try {
+            console.log('🚀 Iniciando finalização do onboarding...');
+            
+            // Preparar dados para envio
+            const finalSchedules = schedules
+                .filter(s => s.day && s.time && s.description)
+                .map(s => ({
+                    day: s.day,
+                    time: s.time,
+                    description: s.description
+                }));
+
+            const dadosOnboarding = {
+                dadosIgreja: {
+                    name: churchData.name,
+                    address: churchData.address,
+                    pastorName: churchData.pastorName,
+                    pastorBio: churchData.pastorBio,
+                    profilePicture: churchData.profilePicture,
+                    websiteUrl: '',
+                    instagramUrl: ''
+                },
+                configuracaoAgente: {
+                    name: agentData.name,
+                    personality: agentData.personality
+                },
+                programacao: finalSchedules
+            };
+
+            console.log('📤 Enviando dados do onboarding:', dadosOnboarding);
+
+            // Enviar para o backend
+            const response = await onboardingService.completar(dadosOnboarding);
+
+            if (response.sucesso) {
+                console.log('✅ Onboarding completado com sucesso!');
+                
+                // Atualizar contexto local
+                setChurchInfo(churchData);
+                setAgentSettings(agentData);
+                setGlobalSchedules(
+                    finalSchedules.map(s => ({...s, id: Date.now().toString() })) as ScheduleItem[]
+                );
+                
+                // Marcar onboarding como concluído
+                await setIsOnboardingComplete(true);
+            }
+
+        } catch (error) {
+            console.error('❌ Erro ao finalizar onboarding:', error);
+            alert('Erro ao finalizar onboarding. Tente novamente.');
+        }
     };
 
     const renderStep = () => {

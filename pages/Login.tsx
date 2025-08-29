@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { supabase } from '../services/supabase';
+import { authService } from '../services/api.js';
 import { BuildingIcon } from '../components/ui/Icons';
 import { AppContext } from '../context/AppContext';
 
@@ -19,7 +19,7 @@ const Login: React.FC = () => {
         return <div>Loading...</div>;
     }
 
-    const { setIsAuthenticated } = context;
+    const { setIsAuthenticated, setIsOnboardingComplete } = context;
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,29 +33,27 @@ const Login: React.FC = () => {
 
         try {
             if (isLogin) {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) {
-                    setError(error.message);
-                } else {
-                    // Login bem-sucedido - atualizar estado
-                    setIsAuthenticated(true);
+                // Fazer login via API
+                const response = await authService.login(email, password);
+                
+                if (response.sucesso) {
+                    console.log('✅ Login realizado com sucesso via API');
+                    console.log('👤 Dados do usuário:', response.dados.usuario);
+                    
+                    // Forçar reload da página para o AppContext detectar o token e carregar os dados
+                    window.location.reload();
                 }
             } else {
-                const { error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                });
-                if (error) {
-                    setError(error.message);
-                } else {
-                    setError('Verifique seu email para confirmar a conta!');
+                // Fazer cadastro via API
+                const response = await authService.cadastro(email, password, email.split('@')[0]);
+                
+                if (response.sucesso) {
+                    setError('Conta criada! Verifique seu email para confirmar.');
                 }
             }
         } catch (err) {
-            setError('Erro inesperado. Tente novamente.');
+            console.error('Erro no login/cadastro:', err);
+            setError(err.message || 'Erro inesperado. Tente novamente.');
         } finally {
             setLoading(false);
         }

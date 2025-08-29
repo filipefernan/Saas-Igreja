@@ -44,7 +44,15 @@ const AppContainer = () => {
 
     const { isAuthenticated, isOnboardingComplete } = context;
 
+    // Debug logs para entender o que está acontecendo
+    console.log('🔍 App.tsx - Estados atuais:', {
+        isStateLoaded,
+        isAuthenticated,
+        isOnboardingComplete
+    });
+
     if (!isStateLoaded) {
+        console.log('⏳ App.tsx - Aguardando carregamento do estado...');
         return (
             <div className="w-full h-screen flex items-center justify-center bg-[var(--color-background-secondary)]">
                 {/* Optional: Add a spinner here for better UX */}
@@ -53,12 +61,16 @@ const AppContainer = () => {
     }
 
     if (!isAuthenticated) {
+        console.log('❌ App.tsx - Usuário não autenticado, mostrando Login');
         return <Login />;
     }
 
     if (!isOnboardingComplete) {
+        console.log('📋 App.tsx - Onboarding não completo, mostrando Onboarding');
         return <Onboarding />;
     }
+
+    console.log('✅ App.tsx - Tudo OK, mostrando Dashboard');
 
     return (
         <>

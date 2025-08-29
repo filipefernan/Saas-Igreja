@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import type { ChurchInfo, AgentSettings, ScheduleItem, EventItem, FaqItem, StudyMaterial, PastoralAppointment, PastoralAvailability, UploadedFile, FinancialInfo, PrayerRequest, Ministry } from '../types';
+import { usuarioService, onboardingService, authService } from '../services/api.js';
 
 interface UserInfo {
     name: string;
@@ -10,9 +11,9 @@ interface UserInfo {
 interface AppContextType {
     isAuthenticated: boolean;
     setIsAuthenticated: (status: boolean) => void;
-    logout: () => void;
+    logout: () => Promise<void>;
     isOnboardingComplete: boolean;
-    setIsOnboardingComplete: (status: boolean) => void;
+    setIsOnboardingComplete: (status: boolean) => Promise<void>;
     
     userInfo: UserInfo;
     setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
@@ -105,36 +106,63 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const [ministries, setMinistries] = useState<Ministry[]>([]);
 
     useEffect(() => {
-        try {
-            const storedAuth = localStorage.getItem('isAuthenticated');
-            if (storedAuth) setIsAuthenticatedState(JSON.parse(storedAuth));
-            
-            const storedOnboarding = localStorage.getItem('isOnboardingComplete');
-            if (storedOnboarding) setIsOnboardingCompleteState(JSON.parse(storedOnboarding));
+        const loadAuthState = async () => {
+            try {
+                // Verifica se existe token salvo
+                const token = localStorage.getItem('authToken');
+                
+                if (token) {
+                    console.log('✅ Token encontrado, verificando usuário...', token);
+                    
+                    try {
+                        // Verificar status do onboarding via API
+                        const onboardingResponse = await usuarioService.verificarOnboarding();
+                        const onboardingStatus = onboardingResponse.dados.onboarding_completed;
+                        console.log('📋 Status onboarding obtido via API:', onboardingStatus);
+                        
+                        // Atualizar estados
+                        setIsOnboardingCompleteState(onboardingStatus);
+                        setIsAuthenticatedState(true);
+                        
+                    } catch (error) {
+                        console.error('❌ Erro ao verificar dados do usuário:', error);
+                        console.error('❌ Token pode estar inválido, removendo...');
+                        localStorage.removeItem('authToken');
+                        setIsAuthenticatedState(false);
+                        setIsOnboardingCompleteState(false);
+                    }
+                } else {
+                    console.log('❌ Nenhum token encontrado');
+                    setIsAuthenticatedState(false);
+                    setIsOnboardingCompleteState(false);
+                }
 
-            const storedData = localStorage.getItem('appData');
-            if (storedData) {
-                const data = JSON.parse(storedData);
-                setUserInfo(data.userInfo || initialUserInfo);
-                setCredits(data.credits !== undefined ? data.credits : 23000);
-                setChurchInfo(data.churchInfo || initialChurchInfo);
-                setAgentSettings(data.agentSettings || initialAgentSettings);
-                setSchedules(data.schedules || []);
-                setEvents(data.events || []);
-                setFaqs(data.faqs || []);
-                setPastoralAvailability(data.pastoralAvailability || []);
-                setPastoralAgenda(data.pastoralAgenda || []);
-                setWebsiteUrl(data.websiteUrl || '');
-                setInstagramUrl(data.instagramUrl || '');
-                setUploadedFiles(data.uploadedFiles || []);
-                setIsGoogleCalendarSynced(data.isGoogleCalendarSynced || false);
-                setFinancialInfo(data.financialInfo || initialFinancialInfo);
-                setPrayerRequests(data.prayerRequests || []);
-                setMinistries(data.ministries || []);
+                const storedData = localStorage.getItem('appData');
+                if (storedData) {
+                    const data = JSON.parse(storedData);
+                    setUserInfo(data.userInfo || initialUserInfo);
+                    setCredits(data.credits !== undefined ? data.credits : 23000);
+                    setChurchInfo(data.churchInfo || initialChurchInfo);
+                    setAgentSettings(data.agentSettings || initialAgentSettings);
+                    setSchedules(data.schedules || []);
+                    setEvents(data.events || []);
+                    setFaqs(data.faqs || []);
+                    setPastoralAvailability(data.pastoralAvailability || []);
+                    setPastoralAgenda(data.pastoralAgenda || []);
+                    setWebsiteUrl(data.websiteUrl || '');
+                    setInstagramUrl(data.instagramUrl || '');
+                    setUploadedFiles(data.uploadedFiles || []);
+                    setIsGoogleCalendarSynced(data.isGoogleCalendarSynced || false);
+                    setFinancialInfo(data.financialInfo || initialFinancialInfo);
+                    setPrayerRequests(data.prayerRequests || []);
+                    setMinistries(data.ministries || []);
+                }
+            } catch (error) {
+                console.error("Failed to load state from localStorage", error);
             }
-        } catch (error) {
-            console.error("Failed to load state from localStorage", error);
-        }
+        };
+        
+        loadAuthState();
     }, []);
 
     useEffect(() => {
@@ -156,16 +184,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const setIsAuthenticated = useCallback((status: boolean) => {
         setIsAuthenticatedState(status);
-        localStorage.setItem('isAuthenticated', JSON.stringify(status));
+        // Não salva no localStorage - agora usa sessão do Supabase
     }, []);
 
-    const logout = useCallback(() => {
-        setIsAuthenticated(false);
-    }, [setIsAuthenticated]);
+    const logout = useCallback(async () => {
+        try {
+            await authService.logout();
+            setIsAuthenticatedState(false);
+            setIsOnboardingCompleteState(false);
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+        }
+    }, []);
 
-    const setIsOnboardingComplete = useCallback((status: boolean) => {
+    const setIsOnboardingComplete = useCallback(async (status: boolean) => {
         setIsOnboardingCompleteState(status);
-        localStorage.setItem('isOnboardingComplete', JSON.stringify(status));
+        // O onboarding agora é gerenciado pelo backend via API
+        console.log('📋 Onboarding status atualizado:', status);
     }, []);
     
     const addCredits = useCallback((amount: number) => {
