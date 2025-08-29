@@ -1,6 +1,31 @@
 // Serviço principal para comunicação com o backend
 
-const API_BASE_URL = 'http://localhost:3001/api';
+// Detectar ambiente e configurar URL da API automaticamente
+const getApiBaseUrl = () => {
+  // Se estiver definida uma variável de ambiente, usa ela
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Detectar baseado no hostname
+  const hostname = window.location.hostname;
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    // Desenvolvimento local
+    return 'http://localhost:3001/api';
+  } else if (hostname.includes('railway.app')) {
+    // Produção Railway - assumindo que o backend está no mesmo domínio com porta 3001
+    // Ou você pode definir a URL específica do seu backend no Railway
+    return `https://seu-backend-railway.up.railway.app/api`;
+  } else {
+    // Fallback para desenvolvimento
+    return 'http://localhost:3001/api';
+  }
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+console.log(`🔗 API configurada para: ${API_BASE_URL}`);
 
 class ApiService {
   constructor() {

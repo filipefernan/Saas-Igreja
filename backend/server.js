@@ -19,9 +19,28 @@ const PORT = process.env.PORT || 3001;
 // Middlewares
 app.use(helmet());
 app.use(morgan('dev'));
+// Configuração de origens permitidas para CORS
+const allowedOrigins = [
+  'http://localhost:5173', // Desenvolvimento local
+  'https://saas-igreja-production.up.railway.app', // Produção Railway
+  process.env.FRONTEND_URL // URL customizada se definida
+].filter(Boolean); // Remove valores undefined/null
+
 app.use(cors({ 
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true 
+  origin: function (origin, callback) {
+    // Permitir requisições sem origin (ex: mobile apps, Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`❌ Origem bloqueada por CORS: ${origin}`);
+      callback(new Error('Não permitido pelo CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept']
 }));
 app.use(express.json());
 app.use(rateLimit({ 
